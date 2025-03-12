@@ -1,0 +1,10 @@
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+  info:
+    title: "Banking API"
+    description: "API for Banking App"
+    version: "1.0"
