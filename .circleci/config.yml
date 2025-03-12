@@ -1,35 +1,22 @@
 version: 2.1
 
 executors:
-  java-executor:
+  default-executor:
     docker:
-      - image: cimg/eclipse-temurin:21
-    working_directory: ~/repo
+      - image: cimg/base:stable
+    working_directory: ~/project
 
 jobs:
   build:
-    executor: kotlin-maven-executor
-
+    executor: default-executor
     steps:
       - checkout
-      - restore_cache:
-            key: maven-cache-{{ checksum "pom.xml" }}
       - run:
-          name: Build and run tests
-          command: mvn clean install -DskipTests=false
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: maven-cache-{{ checksum "pom.xml" }}
-      - store_artifacts:
-          path: target
-          destination: build-artifacts
-      - run:
-          name: Run tests
-          command: mvn test
+          name: Echo Hello World
+          command: echo "Hello, World!"
 
 workflows:
   version: 2
-  build-and-test:
+  build_and_test:
     jobs:
       - build
