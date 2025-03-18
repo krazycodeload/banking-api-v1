@@ -5,10 +5,16 @@ import com.k2infosoft.banking_api_v1.entity.Accounts
 import com.k2infosoft.banking_api_v1.repository.AccountsRepository
 import com.k2infosoft.banking_api_v1.service.AccountService
 import jakarta.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
+
 class AccountServiceImpl(private val accountsRepository: AccountsRepository): AccountService {
+    companion object {
+        val logger: Logger = LoggerFactory.getLogger(AccountServiceImpl::class.java)
+    }
 
     @Transactional
     override fun createAccount(accountDto: AccountsDto): AccountsDto {
@@ -17,6 +23,7 @@ class AccountServiceImpl(private val accountsRepository: AccountsRepository): Ac
     }
     @Transactional
     override fun getAccountById(id: Long): AccountsDto {
+        logger.info("Getting account by id $id")
       return accountsRepository.findById(id).get().toDto()
     }
     @Transactional
@@ -26,6 +33,7 @@ class AccountServiceImpl(private val accountsRepository: AccountsRepository): Ac
             .orElseThrow({ RuntimeException("Account does not exists") })
         val total = account!!.balance + amount
         account.balance = total
+        logger.info("Depositing amount $amount")
         return accountsRepository.save(account).toDto()
     }
     @Transactional
@@ -33,6 +41,7 @@ class AccountServiceImpl(private val accountsRepository: AccountsRepository): Ac
         val account: Accounts? = accountsRepository
             .findById(id)
             .orElseThrow({ RuntimeException("Account does not exists") })
+        logger.info("Withdrawing amount $amount")
         if (account!!.balance < amount) {
             throw java.lang.RuntimeException("Insufficient amount")
         }
@@ -51,6 +60,7 @@ class AccountServiceImpl(private val accountsRepository: AccountsRepository): Ac
         val account: Accounts? = accountsRepository
             .findById(id)
             .orElseThrow({ java.lang.RuntimeException("Account does not exists") })
+        logger.info("Deleting account by id $id")
         return accountsRepository.deleteById(id)
     }
 }
